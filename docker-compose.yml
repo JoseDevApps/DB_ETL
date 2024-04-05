@@ -1,0 +1,44 @@
+version: '3.9'
+
+services:
+# Base de datos Postgres
+  db_pg:
+    image: postgres:16.2-alpine3.18
+    restart: always
+    volumes:
+      - .pg_db:/var/lib/postgresql/data/
+    env_file:
+      - ./.env
+    ports:
+      - 5555:5432
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+# Administrador DB
+  pg_admin:
+    image: dpage/pgadmin4
+    restart: always
+    env_file:
+      - ./.env
+    ports:
+      - 4444:80
+# influxDB
+  # timedb:
+  #   image: influxdb:2
+  #   restart: always
+  #   volumes:
+  #     - ./influx_data:/var/lib/influxdb2
+  #     - ./influx_config:/etc/influxdb2
+  #     - ./influx_scripts:/docker-entrypoint-initdb.d
+  #   env_file:
+  #     - ./.env
+  #   ports:
+  #     - 8086:8086
+
+volumes:
+  pg_db:
+  influx_data:
+  influx_config:
+  influx_scripts:
